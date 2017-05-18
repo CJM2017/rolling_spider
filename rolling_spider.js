@@ -15,22 +15,45 @@ var host = '10.0.2.2';
 var port = 5000;
 var guest_socket = new Client(host, port);
 
-// Connect to preexisting socket
-guest_socket.receive();
-
 // Handle drone communication 
-var my_drone = new RollingSpider();
+var myDrone = new RollingSpider();
+var previousCommand = '';
 
 // Connecting to the Drone
-my_drone.connect(function() {
+myDrone.connect(function() {
 	console.log("Established a connection!");
-	console.log(my_drone.name);
-	my_drone.flatTrim();
-    my_drone.startPing();
-    my_drone.flatTrim();
+	console.log(myDrone.name);
+	myDrone.flatTrim();
+    myDrone.startPing();
+    myDrone.flatTrim();
+
+    // Connect to preexisting socket
+	guest_socket.receive();
+    setInterval(function() {analyze_kinect_command(guest_socket.queue);},100);
 }); 
 
-// make `process.stdin` begin emitting "keypress" events 
+function analyze_kinect_command(dataQueue) {
+	var rightWristY = dataQueue.pop();
+	if (rightWristY > 0) {
+		if (previousCommand != 'takeOff') {
+			console.log("Take off!");
+			myDrone.takeOff();
+			myDrone.flatTrim();
+			previousCommand = 'takeOff';
+		}
+		
+	}
+	else if (rightWristY < 0) {
+		if (previousCommand != 'landing') {
+		  	console.log("Landing!");
+		  	myDrone.land();
+		  	previousCommand = 'landing';
+		  }
+	  }
+}
+
+
+// make process.stdin begin emitting "keypress" events 
 Keypress(process.stdin);
 
 // listen for the "keypress" event 
@@ -39,17 +62,17 @@ process.stdin.on('keypress', function (ch, key) {
 	{
 	  if (key && key.ctrl && key.name == 'c') {
 	  	console.log('Quitting Program');
-	  	my_drone.land();
+	  	myDrone.land();
 	    process.exit();
 	  }
 	  else if (key && key.name == 'up') {
 	  	console.log("Take off!");
-	  	my_drone.takeOff();
-	    my_drone.flatTrim();
+	  	myDrone.takeOff();
+	    myDrone.flatTrim();
 	  }
 	  else if (key && key.name == 'down') {
 	  	console.log("Landing!");
-	  	my_drone.land();
+	  	myDrone.land();
 	  }
 	}
 	catch(err) 
@@ -60,3 +83,5 @@ process.stdin.on('keypress', function (ch, key) {
 
 process.stdin.setRawMode(true);
 process.stdin.resume();
+
+

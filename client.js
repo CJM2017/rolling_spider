@@ -6,7 +6,12 @@ function Client(host, port){
     this.socket.connect(port, host, function() {
         console.log('Connected');
     });
-    this.queue = [];
+
+    // Handle errors related to the socket communication 
+    this.socket.on('error', function(ex) {
+        console.log(ex);
+        console.log("Use arrow keys to fly Quad");
+    });   
 }
 
 Client.prototype.send = function (data){
@@ -16,8 +21,9 @@ Client.prototype.send = function (data){
 Client.prototype.receive = function (){
     var that = this;
     this.socket.on('data', function(data) {
+        data = parseFloat(data);
+        console.log(data);
         that.queue.push(data);
-        console.log(''+data);
     });
 }
 
@@ -29,3 +35,7 @@ Client.prototype.disconnect = function (){
 }
 
 module.exports = Client;
+
+// Because this frequently changes when you change the scope by 
+// calling a new function, you can't access the original value by 
+// using it. Aliasing it to that allows you still to access the original value of this.
