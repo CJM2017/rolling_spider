@@ -11,8 +11,8 @@ var RollingSpider = require("rolling-spider");
 
 
 // Handle the socket connection from Windows Kinect
-var host = '10.0.2.2';
-var port = 5000;
+var host = '10.0.2.2'; // local IP of host machine from within guest OS
+var port = 5000; // Random open port
 var guest_socket = new Client(host, port);
 
 // Handle drone communication 
@@ -27,31 +27,15 @@ myDrone.connect(function() {
     myDrone.startPing();
     myDrone.flatTrim();
 
-    // Connect to preexisting socket
+    // Connect to MVS Host Socket
 	guest_socket.receive();
-    setInterval(function() {analyze_kinect_command(guest_socket.queue);},100);
+    setInterval(function() {analyze_kinect_command(guest_socket);},100);
+    //setInterval(function() {console.log(guest_socket.queue.length);},100);
 }); 
 
-function analyze_kinect_command(dataQueue) {
-	var rightWristY = dataQueue.pop();
-	if (rightWristY > 0) {
-		if (previousCommand != 'takeOff') {
-			console.log("Take off!");
-			myDrone.takeOff();
-			myDrone.flatTrim();
-			previousCommand = 'takeOff';
-		}
-		
-	}
-	else if (rightWristY < 0) {
-		if (previousCommand != 'landing') {
-		  	console.log("Landing!");
-		  	myDrone.land();
-		  	previousCommand = 'landing';
-		  }
-	  }
-}
-
+// Here for TESTING only----------------------------------------------------------
+//guest_socket.receive();
+//setInterval(function() {analyze_kinect_command(guest_socket.queue);},100);
 
 // make process.stdin begin emitting "keypress" events 
 Keypress(process.stdin);
@@ -67,8 +51,8 @@ process.stdin.on('keypress', function (ch, key) {
 	  }
 	  else if (key && key.name == 'up') {
 	  	console.log("Take off!");
+        myDrone.flatTrim();
 	  	myDrone.takeOff();
-	    myDrone.flatTrim();
 	  }
 	  else if (key && key.name == 'down') {
 	  	console.log("Landing!");
@@ -83,5 +67,30 @@ process.stdin.on('keypress', function (ch, key) {
 
 process.stdin.setRawMode(true);
 process.stdin.resume();
+
+function analyze_kinect_command(socket) {
+    var leftWristY = socket.queue.pop();
+    var rightWristY = socket.queue.pop();
+    socket.queue = [];
+
+    // Take off / Landing
+    if (leftWristY != null && rightWristY != null) {
+        if (leftWristY > 0 && rightWristY > 0) {
+            if (previousCommand != 'takeOff') {
+                console.log("Take off!");
+                myDrone.flatTrim();
+                myDrone.takeOff();
+                previousCommand = 'takeOff'; 
+            }       
+        }
+        else if (leftWristY < -0.4 && rightWristY < -0.4) {
+            if (previousCommand != 'landing') {
+                console.log("Landing!");
+                myDrone.land();
+                previousCommand = 'landing';
+            }
+        }
+    }
+}
 
 

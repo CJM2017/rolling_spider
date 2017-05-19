@@ -21,9 +21,11 @@ Client.prototype.send = function (data){
 Client.prototype.receive = function (){
     var that = this;
     this.socket.on('data', function(data) {
-        data = parseFloat(data);
-        console.log(data);
-        that.queue.push(data);
+        var dataString = hex2String(data);
+        var positions = dataString.split(",");
+        for (var i = 0; i < positions.length; i++) {
+            that.queue.push(parseFloat(positions[i]));
+        }
     });
 }
 
@@ -32,6 +34,14 @@ Client.prototype.disconnect = function (){
         console.log('Connection closed');
         this.socket.destroy();
     });
+}
+
+function hex2String(array) {
+    result = "";
+    for (var i = 0; i < array.length; i++) {
+        result += String.fromCharCode(array[i]);
+    }
+    return result;
 }
 
 module.exports = Client;
