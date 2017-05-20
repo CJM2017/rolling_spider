@@ -4,7 +4,7 @@ function Client(host, port){
     this.queue = [];
     this.socket = new net.Socket();
     this.socket.connect(port, host, function() {
-        console.log('Connected');
+        console.log('Connected to Host Server');
     });
 
     // Handle errors related to the socket communication 
@@ -26,6 +26,7 @@ Client.prototype.receive = function (){
         for (var i = 0; i < positions.length; i++) {
             that.queue.push(parseFloat(positions[i]));
         }
+        //console.log(that.queue);
     });
 }
 
