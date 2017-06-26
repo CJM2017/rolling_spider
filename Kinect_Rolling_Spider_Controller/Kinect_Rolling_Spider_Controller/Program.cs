@@ -1,11 +1,10 @@
 ﻿//=============================================================================
-/*
-    Project : Kinnect Controller for Rolling Spider
-    Author  : Connor McCann
-    Date    : 15 May 2017
-    Source  : https://msdn.microsoft.com/en-us/library/6y0e13d3(v=vs.110).aspx
-
-*/
+//
+//   Project : Kinnect Controller for Rolling Spider
+//   Author  : Connor McCann
+//   Date    : 15 May 2017
+//   Source  : https://msdn.microsoft.com/en-us/library/6y0e13d3(v=vs.110).aspx
+//
 //=============================================================================
 using System;
 using System.Text;
@@ -197,7 +196,7 @@ namespace rolling_spider_controller
                             this.builder.Clear();
                             this.jointData.Clear();
 
-                            Thread.Sleep(100); // 4Hz Sample
+                            Thread.Sleep(100); // 10Hz Sample
                         }
                         catch (Exception)
                         {
