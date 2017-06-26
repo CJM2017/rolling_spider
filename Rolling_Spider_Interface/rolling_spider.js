@@ -1,8 +1,8 @@
 //======================================================
 /*	
-	Project	: Kinect Controlled Rolling Spider
-	Author	: Connor McCann	
-	Date	: 15 May 2017
+ *	Project	: Kinect Controlled Rolling Spider
+ *	Author	: Connor McCann	
+ *	Date	: 15 May 2017
 */
 //======================================================
 var Keypress = require('keypress');

@@ -1,4 +1,11 @@
-net = require('net');
+//======================================================
+/*  
+ *  Project : Web Socket Client
+ *  Author  : Connor McCann 
+ *  Date    : 15 May 2017
+*/
+//======================================================
+var net = require('net');
 
 function Client(host, port){
     this.queue = [];
